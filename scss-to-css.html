@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SCSS Nesting to CSS (Grouped)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      font-family: monospace;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #output {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>SCSS Nesting to CSS Converter (Grouped)</h2>
+  <textarea id="scssInput" placeholder="Paste nested SCSS here..."></textarea>
+  <br>
+  <button onclick="convert()">Convert</button>
+  <h3>Output CSS:</h3>
+  <div id="output"></div>
+
+  <script>
+    function convert() {
+      const input = document.getElementById('scssInput').value;
+      const lines = input.split('\n');
+      const stack = [];
+      const blocks = {};
+
+      for (let rawLine of lines) {
+        const line = rawLine.trim();
+
+        if (line.endsWith('{')) {
+          const selector = line.replace('{', '').trim();
+          stack.push(selector);
+        } else if (line === '}') {
+          stack.pop();
+        } else if (line.includes(':')) {
+          const fullSelector = stack.join(' ');
+          const [prop, val] = line.replace(';', '').split(':');
+          const value = val.includes('!important') ? val.trim() : val.trim() + ' !important';
+
+          if (!blocks[fullSelector]) {
+            blocks[fullSelector] = [];
+          }
+          blocks[fullSelector].push(`  ${prop.trim()}: ${value};`);
+        }
+      }
+
+      const output = Object.entries(blocks).map(([selector, props]) => {
+        return `${selector} {\n${props.join('\n')}\n}`;
+      }).join('\n\n');
+
+      document.getElementById('output').textContent = output;
+    }
+  </script>
+</body>
+</html>
