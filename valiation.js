@@ -1,4 +1,8 @@
 /***Validate */
+//call button function
+/*
+<input id="loginbtn" type="submit" onclick="return window.validation(event, '#formid')" name="login" value="Submit" >
+*/
 window.validation = function(e, id, submit=true) {
     e.preventDefault();
     var valfield = id + " input," + id + " select," + id + " textarea";
